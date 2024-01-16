@@ -1,16 +1,23 @@
-import express, { Express, Request, Response } from 'express'
 import dotenv from 'dotenv'
 import path from 'path'
+import app from './app'
+import languagifydb from './models/db'
+
 dotenv.config({ path: path.join(__dirname, './.env') })
 
-import ecommercedb from './models/db'
+const port = process.env.API_PORT || 3000
+console.log('🤖 ~ port:', port)
 
-const app: Express = express()
-const port = process.env.PORT || 3000
+// connect and sync db
+languagifydb
+    .sync({ force: false })
+    .then(() => console.log('synced languagifydb successfully!'))
+    .catch((err) => console.log('unable to sync languagifydb!', err))
 
-app.get('/', (req: Request, res: Response) => {
-    res.send('Hello World!')
-})
+languagifydb
+    .authenticate()
+    .then(() => console.log('connected languagifydb successfully!'))
+    .catch((err) => console.log('unable to connect languagifydb!', err))
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)

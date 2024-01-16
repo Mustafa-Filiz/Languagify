@@ -1,23 +1,17 @@
 import { Sequelize } from 'sequelize'
 
 // creating the auth url
-const url = process.env.DB_URL
-
-if (!url) {
-    throw new Error(
-        'Please define the DB_URL environment variable inside .env.local'
-    )
-}
+const url = 'postgres://postgres:languagify@localhost:5432/languagify-db'
 
 // creating the db instance
-const ecommercedb = new Sequelize(url, {
-    logging: () => null,
-    dialect: 'postgres',
-    define: {
-        underscored: true,
-        freezeTableName: true,
-        timestamps: true,
-    },
+const languagifydb = new Sequelize(url, {
+  logging: () => null,
+  dialect: 'postgres',
+  define: {
+    underscored: true,
+    freezeTableName: true,
+    timestamps: true,
+  },
 })
 
-export default ecommercedb
+export default languagifydb
