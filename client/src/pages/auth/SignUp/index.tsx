@@ -11,15 +11,26 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import PasswordInput from '../../../components/ui/PasswordInput'
 
-const SignUpSchema = z
+const signUpSchema = z
   .object({
-    email: z.string().email(),
-    password: z.string().min(8),
-    passwordConfirmation: z.string().min(8),
+    firstName: z.string().min(1, { message: 'First Name is required' }),
+    lastName: z.string().min(1, { message: 'Last Name is required' }),
+    email: z.string().min(1, { message: 'Email is required' }).email({
+      message: 'Must be a valid email',
+    }),
+    password: z
+      .string()
+      .min(6, { message: 'Password must be at least 6 characters' }),
+    confirmPassword: z
+      .string()
+      .min(1, { message: 'Confirm Password is required' }),
   })
-  .required()
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ['confirmPassword'],
+    message: "Passwords don't match",
+  })
 
-type SignUpSchemaType = z.infer<typeof SignUpSchema>
+type SignUpSchemaType = z.infer<typeof signUpSchema>
 
 const SignUp = () => {
   const {
@@ -27,7 +38,7 @@ const SignUp = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<SignUpSchemaType>({
-    resolver: zodResolver(SignUpSchema),
+    resolver: zodResolver(signUpSchema),
   })
 
   const onSubmit: SubmitHandler<SignUpSchemaType> = (data) => console.log(data)
@@ -46,6 +57,18 @@ const SignUp = () => {
           <CardHeader className="text-xl flex-center">SignUp</CardHeader>
           <CardBody>
             <Input
+              {...register('firstName')}
+              label="First Name"
+              isRequired
+              errorMessage={errors?.firstName?.message}
+            />
+            <Input
+              {...register('lastName')}
+              label="Last Name"
+              isRequired
+              errorMessage={errors?.lastName?.message}
+            />
+            <Input
               {...register('email')}
               label="Email"
               isRequired
@@ -53,14 +76,15 @@ const SignUp = () => {
             />
             <PasswordInput
               {...register('password')}
+              label="Password"
               isRequired
               errorMessage={errors?.password?.message}
             />
             <PasswordInput
-              {...register('passwordConfirmation')}
-              label="Password Confirmation"
+              {...register('confirmPassword')}
+              label="Confirm Password"
               isRequired
-              errorMessage={errors?.passwordConfirmation?.message}
+              errorMessage={errors?.confirmPassword?.message}
             />
           </CardBody>
           <CardFooter>
