@@ -10,15 +10,15 @@ console.log('🤖 ~ port:', port)
 
 // connect and sync db
 languagifydb
-    .sync({ force: false })
-    .then(() => console.log('synced languagifydb successfully!'))
-    .catch((err) => console.log('unable to sync languagifydb!', err))
+  .sync({ force: true })
+  .then(() => console.log('synced languagifydb successfully!'))
+  .catch((err) => console.log('unable to sync languagifydb!', err))
 
 languagifydb
-    .authenticate()
-    .then(() => console.log('connected languagifydb successfully!'))
-    .catch((err) => console.log('unable to connect languagifydb!', err))
+  .authenticate()
+  .then(() => console.log('connected languagifydb successfully!'))
+  .catch((err) => console.log('unable to connect languagifydb!', err))
 
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+  console.log(`Example app listening on port ${port}`)
 })

@@ -15,3 +15,4 @@ const languagifydb = new Sequelize(url, {
 })
 
 export default languagifydb
+require('./index')
