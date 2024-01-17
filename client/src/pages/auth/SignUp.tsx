@@ -8,29 +8,9 @@ import {
 } from '@nextui-org/react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import PasswordInput from '../../../components/ui/PasswordInput'
-
-const signUpSchema = z
-  .object({
-    firstName: z.string().min(1, { message: 'First Name is required' }),
-    lastName: z.string().min(1, { message: 'Last Name is required' }),
-    email: z.string().min(1, { message: 'Email is required' }).email({
-      message: 'Must be a valid email',
-    }),
-    password: z
-      .string()
-      .min(6, { message: 'Password must be at least 6 characters' }),
-    confirmPassword: z
-      .string()
-      .min(1, { message: 'Confirm Password is required' }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    path: ['confirmPassword'],
-    message: "Passwords don't match",
-  })
-
-type SignUpSchemaType = z.infer<typeof signUpSchema>
+import PasswordInput from '../../components/ui/PasswordInput'
+import { signUpSchema, SignUpSchemaType } from '../../schemas/SignUp'
+import { useCreateUser } from '../../services/AuthService'
 
 const SignUp = () => {
   const {
@@ -41,7 +21,12 @@ const SignUp = () => {
     resolver: zodResolver(signUpSchema),
   })
 
-  const onSubmit: SubmitHandler<SignUpSchemaType> = (data) => console.log(data)
+  const { mutate: createUser, isPending } = useCreateUser()
+
+  const onSubmit: SubmitHandler<SignUpSchemaType> = (values) => {
+    console.log('🤖 ~ values:', values)
+    createUser(values)
+  }
 
   return (
     <div className="flex-center min-h-screen">
@@ -92,6 +77,7 @@ const SignUp = () => {
               type="submit"
               color="primary"
               fullWidth
+              isLoading={isPending}
             >
               Submit
             </Button>

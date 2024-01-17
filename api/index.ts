@@ -6,7 +6,6 @@ import languagifydb from './models/db'
 dotenv.config({ path: path.join(__dirname, './.env') })
 
 const port = process.env.API_PORT || 3000
-console.log('🤖 ~ port:', port)
 
 // connect and sync db
 languagifydb

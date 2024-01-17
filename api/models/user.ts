@@ -3,26 +3,27 @@ import languagifydb from './db'
 import { z } from 'zod'
 
 export const userSchema = z.object({
-  first_name: z.string(),
-  last_name: z.string(),
+  firstName: z.string(),
+  lastName: z.string(),
   email: z.string().email(),
   password: z.string(),
+  confirmPassword: z.string(),
 })
 
 class User extends Model {
-  public first_name!: string
-  public last_name!: string
+  public firstName!: string
+  public lastName!: string
   public email!: string
   public password!: string
 }
 
 User.init(
   {
-    first_name: {
+    firstName: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    last_name: {
+    lastName: {
       type: DataTypes.STRING,
       allowNull: false,
     },
