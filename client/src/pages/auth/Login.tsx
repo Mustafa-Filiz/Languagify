@@ -7,43 +7,66 @@ import {
   Input,
 } from '@nextui-org/react'
 import { useForm, SubmitHandler } from 'react-hook-form'
-
-type Inputs = {
-  example: string
-  exampleRequired: string
-}
+import { zodResolver } from '@hookform/resolvers/zod'
+import PasswordInput from '../../components/PasswordInput'
+import { LoginSchema, LoginType } from '../../schemas/Login'
+import Link from '../../components/Link'
 
 const Login = () => {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
-  } = useForm<Inputs>()
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data)
+  } = useForm<LoginType>({
+    resolver: zodResolver(LoginSchema),
+  })
 
-  console.log(watch('example')) // watch input value by passing the name of it
+  const onSubmit: SubmitHandler<LoginType> = (values) => {
+    console.log('🤖 ~ values:', values)
+  }
 
   return (
-    <div className="flex-center h-full">
-      <Card className="p-4">
+    <div className="flex-center">
+      <Card
+        classNames={{
+          base: 'border-none bg-background/80 w-96',
+          body: 'flex flex-col gap-4',
+          footer: 'flex flex-col gap-4',
+        }}
+        isBlurred
+        shadow="lg"
+      >
         <form onSubmit={handleSubmit(onSubmit)}>
-          <CardHeader>Login</CardHeader>
+          <CardHeader className="text-2xl flex-center">Login</CardHeader>
           <CardBody>
             <Input
-              defaultValue="test"
-              {...register('example')}
+              {...register('email')}
+              label="Email"
+              isRequired
+              errorMessage={errors?.email?.message}
             />
-            <Input {...register('exampleRequired', { required: true })} />
-            {errors.exampleRequired && <span>This field is required</span>}
+            <PasswordInput
+              {...register('password')}
+              label="Password"
+              isRequired
+              errorMessage={errors?.password?.message}
+            />
           </CardBody>
           <CardFooter>
             <Button
               type="submit"
               color="primary"
+              fullWidth
+              // isLoading={isPending}
             >
               Submit
             </Button>
+            <Link
+              to="/sign-up"
+              className="text-sm"
+            >
+              Sign up now
+            </Link>
           </CardFooter>
         </form>
       </Card>

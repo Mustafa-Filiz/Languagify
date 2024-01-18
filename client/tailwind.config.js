@@ -12,6 +12,13 @@ export default {
       backgroundImage: {
         spotify: "url('/spotify.jpeg')",
       },
+      colors: {
+        'spotify-green': '#1db954',
+        'spotify-black': '#121212',
+        'spotify-l-black': '#212121',
+        'spotify-gray': '#535353',
+        'spotify-l-gray': '#b3b3b3',
+      },
     },
   },
   darkMode: 'class',

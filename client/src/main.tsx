@@ -12,7 +12,7 @@ declare module '@tanstack/react-router' {
   }
 }
 
-const queryClient = new QueryClient()
+export const queryClient = new QueryClient()
 
 const rootElement = document.getElementById('root')!
 if (!rootElement.innerHTML) {

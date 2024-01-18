@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const signUpSchema = z
+export const SignUpSchema = z
   .object({
     firstName: z.string().min(1, { message: 'First Name is required' }),
     lastName: z.string().min(1, { message: 'Last Name is required' }),
@@ -19,4 +19,4 @@ export const signUpSchema = z
     message: "Passwords don't match",
   })
 
-export type SignUpSchemaType = z.infer<typeof signUpSchema>
+export type SignUpType = z.infer<typeof SignUpSchema>

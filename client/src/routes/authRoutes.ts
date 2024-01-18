@@ -7,7 +7,7 @@ const SignUp = lazyRouteComponent(() => import('../pages/auth/SignUp'))
 
 const authRoute = new Route({
   getParentRoute: () => rootRoute,
-  path: 'auth',
+  id: 'auth',
   component: AuthLayout,
 })
 
