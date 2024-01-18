@@ -11,6 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import PasswordInput from '../../components/PasswordInput'
 import { LoginSchema, LoginType } from '../../schemas/Login'
 import Link from '../../components/Link'
+import { useLogin } from '../../services/AuthService'
 
 const Login = () => {
   const {
@@ -21,8 +22,10 @@ const Login = () => {
     resolver: zodResolver(LoginSchema),
   })
 
+  const { mutate: login, isPending } = useLogin()
+
   const onSubmit: SubmitHandler<LoginType> = (values) => {
-    console.log('🤖 ~ values:', values)
+    login(values)
   }
 
   return (
@@ -57,7 +60,7 @@ const Login = () => {
               type="submit"
               color="primary"
               fullWidth
-              // isLoading={isPending}
+              isLoading={isPending}
             >
               Submit
             </Button>

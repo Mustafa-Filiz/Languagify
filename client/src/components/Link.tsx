@@ -1,14 +1,28 @@
-import { Link as LinkRoute, LinkProps } from '@tanstack/react-router'
-import { Link as LinkUI } from '@nextui-org/react'
 import { FC } from 'react'
+import { LinkIcon } from '@nextui-org/shared-icons'
+import { linkAnchorClasses } from '@nextui-org/theme'
 
-interface ILinkProps extends LinkProps {}
+import { LinkProps as NextLinkProps, useLink } from '@nextui-org/react'
+import {
+  LinkProps as TanLinkProps,
+  Link as TanLink,
+} from '@tanstack/react-router'
 
-const Link: FC<ILinkProps> = (props) => {
+type LinkPropTypes = TanLinkProps & NextLinkProps
+
+const Link: FC<LinkPropTypes> = (props) => {
+  const {
+    children,
+    showAnchorIcon,
+    anchorIcon = <LinkIcon className={linkAnchorClasses} />,
+    getLinkProps,
+  } = useLink(props)
+
   return (
-    <LinkUI>
-      <LinkRoute {...props}>{props?.children}</LinkRoute>
-    </LinkUI>
+    <TanLink {...getLinkProps()}>
+      {children}
+      {showAnchorIcon && anchorIcon}
+    </TanLink>
   )
 }
 

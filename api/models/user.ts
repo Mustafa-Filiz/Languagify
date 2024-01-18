@@ -2,12 +2,17 @@ import { DataTypes, Model } from 'sequelize'
 import languagifydb from './db'
 import { z } from 'zod'
 
-export const userSchema = z.object({
+export const UserSingUpSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
   email: z.string().email(),
   password: z.string(),
   confirmPassword: z.string(),
+})
+
+export const UserLoginSchema = z.object({
+  email: z.string().email(),
+  password: z.string(),
 })
 
 class User extends Model {
