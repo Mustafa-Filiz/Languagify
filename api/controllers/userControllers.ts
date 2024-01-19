@@ -61,4 +61,13 @@ async function me(req: Request, res: Response, next: NextFunction) {
   return res.send(req.user)
 }
 
-export { createUser, login, me }
+async function logout(req: Request, res: Response, next: NextFunction) {
+  if (!req.user) {
+    return res.status(401).json({ message: 'Unauthorized' })
+  }
+  req.user.token = null
+  await req.user.save()
+  return res.send({ message: 'Logout successfully' })
+}
+
+export { createUser, login, me, logout }

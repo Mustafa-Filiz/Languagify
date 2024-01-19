@@ -1,6 +1,10 @@
 import { ZodError, z } from 'zod'
 import { LANGIFY_LOCAL_STORAGE_KEY } from '../services/AuthService'
-import { getLocalStorageValue } from '../hooks/useLocalStorage'
+import {
+  getLocalStorageValue,
+  removeLocalStorageValue,
+} from '../hooks/useLocalStorage'
+import router from '../routes'
 
 type RequestOptions = {
   params?: Record<string, string>
@@ -38,6 +42,13 @@ async function customFetch<T>(
         ...(token && { Authorization: `Bearer ${token}` }),
       },
     })
+
+    if (response.status === 401) {
+      removeLocalStorageValue(LANGIFY_LOCAL_STORAGE_KEY)
+      throw router.navigate({
+        to: '/login',
+      })
+    }
 
     if (!response.ok) {
       throw new Error(response.statusText)

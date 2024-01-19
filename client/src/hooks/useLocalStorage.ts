@@ -2,15 +2,23 @@ import { useState, useEffect } from 'react'
 
 type ValueSetter<T> = (value: T | ((prevValue: T) => T)) => void
 
-function useLocalStorage<T>(key: string, initialValue: T): [T, ValueSetter<T>] {
+function useLocalStorage<T>(
+  key: string,
+  initialValue: T,
+  isRemove: boolean = false
+): [T, ValueSetter<T>] {
   const [value, setValue] = useState<T>(() => {
     const storedValue = localStorage.getItem(key)
     return storedValue ? JSON.parse(storedValue) : initialValue
   })
 
   useEffect(() => {
+    if (!value) {
+      return
+    }
+
     localStorage.setItem(key, JSON.stringify(value))
-  }, [key, value])
+  }, [key, value, isRemove])
 
   return [value, setValue]
 }
@@ -26,4 +34,8 @@ export function getLocalStorageValue<T>(key: string, initialValue: T): T {
 
 export function setLocalStorageValue<T>(key: string, value: T): void {
   localStorage.setItem(key, JSON.stringify(value))
+}
+
+export function removeLocalStorageValue(key: string): void {
+  localStorage.removeItem(key)
 }

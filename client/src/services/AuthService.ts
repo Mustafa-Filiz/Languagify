@@ -2,20 +2,25 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { SignUpType } from '../schemas/SignUp'
 import { queryClient } from '../main'
 import customFetch from '../utils/customFetch'
-import { UserSchema } from '../schemas/User'
+import { UserSchema, UserType } from '../schemas/User'
 import { useNavigate } from '@tanstack/react-router'
 import { LoginType } from '../schemas/Login'
-import useLocalStorage from '../hooks/useLocalStorage'
+import useLocalStorage, {
+  removeLocalStorageValue,
+} from '../hooks/useLocalStorage'
 
 export const LANGIFY_LOCAL_STORAGE_KEY = 'langify-token'
 
 export const getAuthUser = () => {
-  return queryClient.getQueryData(['authUser'])
+  return queryClient.getQueryData(['authUser']) as UserType | undefined
 }
 
 export const useCreateUser = () => {
   const navigate = useNavigate()
-  const [, setToken] = useLocalStorage<string>(LANGIFY_LOCAL_STORAGE_KEY, '')
+  const [, setToken] = useLocalStorage<string | null>(
+    LANGIFY_LOCAL_STORAGE_KEY,
+    null
+  )
 
   const mutation = useMutation({
     mutationKey: ['authUser'],
@@ -46,7 +51,10 @@ export const useCreateUser = () => {
 
 export const useLogin = () => {
   const navigate = useNavigate()
-  const [, setToken] = useLocalStorage<string>(LANGIFY_LOCAL_STORAGE_KEY, '')
+  const [, setToken] = useLocalStorage<string | null>(
+    LANGIFY_LOCAL_STORAGE_KEY,
+    null
+  )
 
   const mutation = useMutation({
     mutationKey: ['authUser'],
@@ -68,6 +76,36 @@ export const useLogin = () => {
       setToken(data.token)
       navigate({
         to: '/',
+      })
+    },
+  })
+
+  return mutation
+}
+
+export const useLogout = () => {
+  const navigate = useNavigate()
+
+  const mutation = useMutation({
+    mutationKey: ['authUser'],
+    mutationFn: async () => {
+      const response = await customFetch('/user/logout', UserSchema, {
+        init: {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+        },
+      })
+
+      return response
+    },
+    onSuccess: () => {
+      removeLocalStorageValue(LANGIFY_LOCAL_STORAGE_KEY)
+      queryClient.setQueryData(['authUser'], undefined)
+      navigate({
+        to: '/login',
       })
     },
   })
