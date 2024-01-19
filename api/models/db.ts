@@ -1,10 +1,10 @@
 import { Sequelize } from 'sequelize'
 
 // creating the auth url
-const url = 'postgres://postgres:languagify@localhost:5432/languagify-db'
+const url = 'postgres://postgres:languagify@localhost:5432/langify-db'
 
 // creating the db instance
-const languagifydb = new Sequelize(url, {
+const langify = new Sequelize(url, {
   logging: () => null,
   dialect: 'postgres',
   define: {
@@ -14,5 +14,5 @@ const languagifydb = new Sequelize(url, {
   },
 })
 
-export default languagifydb
+export default langify
 require('./index')

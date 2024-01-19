@@ -5,7 +5,7 @@ export const UserSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
   email: z.string().email(),
-  password: z.string(),
+  token: z.string(),
   createdAt: z.string(),
   updatedAt: z.string(),
 })

@@ -1,16 +1,21 @@
 import { Route, lazyRouteComponent, redirect } from '@tanstack/react-router'
 import rootRoute from './rootRoute'
-import { getAuthUser } from '../services/AuthService'
+import { LANGIFY_LOCAL_STORAGE_KEY } from '../services/AuthService'
+import { getLocalStorageValue } from '../hooks/useLocalStorage'
 
+const MainLayout = lazyRouteComponent(() => import('../layouts/MainLayout'))
 const Home = lazyRouteComponent(() => import('../pages/home'))
 
 const protectedRoutes = new Route({
   getParentRoute: () => rootRoute,
   id: 'protected',
-  component: () => null,
+  component: MainLayout,
   beforeLoad: async () => {
-    const authUser = getAuthUser()
-    if (!authUser) {
+    const token = getLocalStorageValue<string | null>(
+      LANGIFY_LOCAL_STORAGE_KEY,
+      null
+    )
+    if (!token) {
       throw redirect({
         to: '/login',
       })

@@ -1,4 +1,6 @@
 import { ZodError, z } from 'zod'
+import { LANGIFY_LOCAL_STORAGE_KEY } from '../services/AuthService'
+import { getLocalStorageValue } from '../hooks/useLocalStorage'
 
 type RequestOptions = {
   params?: Record<string, string>
@@ -24,7 +26,18 @@ async function customFetch<T>(
       finalUrl += `?${params}`
     }
 
-    const response = await fetch(finalUrl, options?.init)
+    const token = getLocalStorageValue<string | null>(
+      LANGIFY_LOCAL_STORAGE_KEY,
+      null
+    )
+
+    const response = await fetch(finalUrl, {
+      ...options?.init,
+      headers: {
+        ...options?.init?.headers,
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    })
 
     if (!response.ok) {
       throw new Error(response.statusText)

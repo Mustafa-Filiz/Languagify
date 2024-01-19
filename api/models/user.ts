@@ -1,5 +1,5 @@
 import { DataTypes, Model } from 'sequelize'
-import languagifydb from './db'
+import langify from './db'
 import { z } from 'zod'
 
 export const UserSingUpSchema = z.object({
@@ -20,6 +20,7 @@ class User extends Model {
   public lastName!: string
   public email!: string
   public password!: string
+  public token!: string | null
 }
 
 User.init(
@@ -41,10 +42,17 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    token: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
   {
-    sequelize: languagifydb,
+    sequelize: langify,
     tableName: 'users',
+    defaultScope: {
+      attributes: { exclude: ['password'] },
+    },
   }
 )
 
