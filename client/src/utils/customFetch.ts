@@ -61,11 +61,11 @@ async function customFetch<T>(
     return validatedData as z.infer<typeof responseSchema>
   } catch (error) {
     console.error(error)
-    if (error instanceof Error) {
-      throw new Error(error.message)
-    }
     if (error instanceof ZodError) {
       throw new ApiResponseValidationError(error)
+    }
+    if (error instanceof Error) {
+      throw new Error(error.message)
     }
   }
 

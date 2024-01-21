@@ -1,9 +1,8 @@
 import { Button } from '@nextui-org/react'
-import { getAuthUser, useLogout } from '../../services/AuthService'
+import { useLogout, useUser } from '../../services/AuthService'
 
 const Home = () => {
-  const user = getAuthUser()
-  console.log('🤖 ~ user:', user)
+  const { data: user } = useUser()
   const { mutate: logout } = useLogout()
   return (
     <div className="text-white">

@@ -8,6 +8,8 @@ import { LoginType } from '../schemas/Login'
 import useLocalStorage, {
   removeLocalStorageValue,
 } from '../hooks/useLocalStorage'
+import { useEffect } from 'react'
+import { z } from 'zod'
 
 export const LANGIFY_LOCAL_STORAGE_KEY = 'langify-token'
 
@@ -40,11 +42,18 @@ export const useCreateUser = () => {
     onSuccess: (data) => {
       queryClient.setQueryData(['authUser'], data)
       setToken(data.token)
-      navigate({
-        to: '/',
-      })
     },
   })
+
+  useEffect(() => {
+    if (!mutation.isSuccess) {
+      return
+    }
+
+    navigate({
+      to: '/',
+    })
+  }, [mutation.isSuccess, navigate])
 
   return mutation
 }
@@ -74,11 +83,18 @@ export const useLogin = () => {
     onSuccess: (data) => {
       queryClient.setQueryData(['authUser'], data)
       setToken(data.token)
-      navigate({
-        to: '/',
-      })
     },
   })
+
+  useEffect(() => {
+    if (!mutation.isSuccess) {
+      return
+    }
+
+    navigate({
+      to: '/',
+    })
+  }, [mutation.isSuccess, navigate])
 
   return mutation
 }
@@ -86,10 +102,14 @@ export const useLogin = () => {
 export const useLogout = () => {
   const navigate = useNavigate()
 
+  const LogoutSchema = z.object({
+    message: z.string(),
+  })
+
   const mutation = useMutation({
     mutationKey: ['authUser'],
     mutationFn: async () => {
-      const response = await customFetch('/user/logout', UserSchema, {
+      const response = await customFetch('/user/logout', LogoutSchema, {
         init: {
           method: 'GET',
           headers: {
@@ -104,11 +124,18 @@ export const useLogout = () => {
     onSuccess: () => {
       removeLocalStorageValue(LANGIFY_LOCAL_STORAGE_KEY)
       queryClient.setQueryData(['authUser'], undefined)
-      navigate({
-        to: '/login',
-      })
     },
   })
+
+  useEffect(() => {
+    if (!mutation.isSuccess) {
+      return
+    }
+
+    navigate({
+      to: '/login',
+    })
+  }, [mutation.isSuccess, navigate])
 
   return mutation
 }
@@ -122,6 +149,7 @@ export const useUser = () => {
       return response
     },
     enabled: !authUser,
+    initialData: authUser,
   })
 
   return query
