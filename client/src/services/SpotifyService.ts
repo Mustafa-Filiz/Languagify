@@ -1,30 +1,24 @@
-import { useMutation } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import customFetch from '../utils/customFetch'
-import { SpotifyConnectSchema } from '../schemas/SpotifyToken'
+import { SpotifyProfileSchema } from '../types/SpotifyProfile'
+import { queryClient } from '../main'
 
-const useSpotifyConnect = () => {
-  const mutation = useMutation({
-    mutationKey: ['spotifyConnect'],
-    mutationFn: async () => {
-      const response = await customFetch(
-        '/spotify/connect',
-        SpotifyConnectSchema,
-        {
-          init: {
-            method: 'GET',
-          },
-        }
-      )
-
+const useSpotifyProfile = () => {
+  const query = useQuery({
+    queryKey: ['spotify-me'],
+    queryFn: async () => {
+      const response = await customFetch('/spotify/me', SpotifyProfileSchema, {
+        init: {
+          method: 'GET',
+        },
+      })
+      console.log('🤖 ~ response:', response)
       return response
     },
-    onSuccess: (data) => {
-      const a = document.createElement('a')
-      a.href = data.auth_url
-      a.click()
-    },
+    enabled: !queryClient.getQueryData(['spotify-me']),
   })
-  return mutation
+
+  return query
 }
 
-export { useSpotifyConnect }
+export { useSpotifyProfile }

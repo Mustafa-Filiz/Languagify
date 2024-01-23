@@ -22,31 +22,17 @@ async function customFetch<T>(
       url += `?${params}`
     }
 
-    // const token = getLocalStorageValue<string | null>(
-    //   LANGIFY_LOCAL_STORAGE_KEY,
-    //   null
-    // )
-
     const response = await fetch(url, {
       ...options?.init,
-      headers: {
-        ...options?.init?.headers,
-        // ...(token && { Authorization: `Bearer ${token}` }),
-      },
+      credentials: 'include',
     })
 
-    // if (response.status === 401) {
-    //   removeLocalStorageValue(LANGIFY_LOCAL_STORAGE_KEY)
-    //   throw router.navigate({
-    //     to: '/login',
-    //   })
-    // }
-
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(response.statusText)
     }
 
     const data = await response.json()
+    console.log('🤖 ~ data:', data)
 
     const validatedData = responseSchema.parse(data)
 

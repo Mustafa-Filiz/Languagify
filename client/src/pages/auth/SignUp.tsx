@@ -9,7 +9,7 @@ import {
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import PasswordInput from '../../components/PasswordInput'
-import { SignUpSchema, SignUpType } from '../../schemas/SignUp'
+import { SignUpSchema, SignUpType } from '../../types/SignUp'
 import { useCreateUser } from '../../services/AuthService'
 import Link from '../../components/Link'
 

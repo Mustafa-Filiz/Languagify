@@ -1,10 +1,10 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { SignUpType } from '../schemas/SignUp'
+import { SignUpType } from '../types/SignUp'
 import { queryClient } from '../main'
 import customFetch from '../utils/customFetch'
-import { UserSchema, UserType } from '../schemas/User'
+import { UserSchema, UserType } from '../types/User'
 import { useNavigate } from '@tanstack/react-router'
-import { LoginType } from '../schemas/Login'
+import { LoginType } from '../types/Login'
 import { useEffect } from 'react'
 import { z } from 'zod'
 

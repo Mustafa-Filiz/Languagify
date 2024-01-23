@@ -1,9 +1,14 @@
 import { Button } from '@nextui-org/react'
 import { useLogout, useUser } from '../../services/AuthService'
+import { useSpotifyProfile } from '../../services/SpotifyService'
 
 const Home = () => {
   const { data: user } = useUser()
   const { mutate: logout } = useLogout()
+
+  const { data: spotifyProfile } = useSpotifyProfile()
+  console.log('🤖 ~ spotifyProfile:', spotifyProfile)
+
   return (
     <div className="text-white">
       <h1>Home</h1>

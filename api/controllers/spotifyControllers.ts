@@ -1,22 +1,9 @@
 import { Request, Response, NextFunction } from 'express'
-import customFetch from '../utils/customFetch'
 import querystring from 'querystring'
+import customFetch from '../utils/customFetch'
+import { SpotifyProfileSchema } from '../types/SpotifyProfile'
 
 const STATE_KEY = 'spotify_auth_state'
-
-async function getAccessToken(req: Request, res: Response, next: NextFunction) {
-  const spotifyResponse = await fetch(`${process.env.SPOTIFY_TOKEN_API_URL}`, {
-    method: 'post',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: `grant_type=client_credentials&client_id=${process.env.SPOTIFY_CLIENT_ID}&client_secret=${process.env.SPOTIFY_CLIENT_SECRET}`,
-  })
-
-  const spotifyResponseJson = await spotifyResponse.json()
-
-  res.send(spotifyResponseJson)
-}
 
 async function loginSpotify(req: Request, res: Response, next: NextFunction) {
   const state = Math.random().toString(36)
@@ -76,12 +63,6 @@ async function spotifyCallback(
       const access_token = spotifyResponseJson?.access_token
       const refresh_token = spotifyResponseJson?.refresh_token
 
-      const tokens = {
-        access_token: access_token,
-        refresh_token: refresh_token,
-      }
-      console.log('🤖 ~ tokens:', tokens)
-
       res.cookie('spotify_access_token', access_token)
       res.cookie('spotify_refresh_token', refresh_token)
 
@@ -94,4 +75,29 @@ async function spotifyCallback(
   }
 }
 
-export { getAccessToken, loginSpotify, spotifyCallback }
+async function getSpotifyProfile(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const response = await customFetch(
+    `${process.env.SPOTIFY_API_URL}/me`,
+    SpotifyProfileSchema,
+    {
+      init: {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          Authorization: `Bearer ${req.cookies.spotify_access_token}`,
+        },
+      },
+    }
+  )
+
+  console.log('🤖 ~ response:', response)
+
+  res.send(response)
+}
+
+export { loginSpotify, spotifyCallback, getSpotifyProfile }

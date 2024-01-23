@@ -11,6 +11,7 @@ const protectedRoutes = new Route({
   component: MainLayout,
   beforeLoad: async () => {
     const user = await fetchUser()
+    console.log('🤖 ~ user:', user)
 
     if (!user) {
       throw redirect({
