@@ -16,6 +16,14 @@ const Home = () => {
       >
         Logout
       </Button>
+      <Button
+        color="success"
+        onClick={() => {
+          window.location.href = 'http://localhost:4000/api/spotify/connect'
+        }}
+      >
+        Connect to Spotify
+      </Button>
     </div>
   )
 }

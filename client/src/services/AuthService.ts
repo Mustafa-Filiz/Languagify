@@ -5,9 +5,6 @@ import customFetch from '../utils/customFetch'
 import { UserSchema, UserType } from '../schemas/User'
 import { useNavigate } from '@tanstack/react-router'
 import { LoginType } from '../schemas/Login'
-import useLocalStorage, {
-  removeLocalStorageValue,
-} from '../hooks/useLocalStorage'
 import { useEffect } from 'react'
 import { z } from 'zod'
 
@@ -19,10 +16,6 @@ export const getAuthUser = () => {
 
 export const useCreateUser = () => {
   const navigate = useNavigate()
-  const [, setToken] = useLocalStorage<string | null>(
-    LANGIFY_LOCAL_STORAGE_KEY,
-    null
-  )
 
   const mutation = useMutation({
     mutationKey: ['authUser'],
@@ -41,7 +34,6 @@ export const useCreateUser = () => {
     },
     onSuccess: (data) => {
       queryClient.setQueryData(['authUser'], data)
-      setToken(data.token)
     },
   })
 
@@ -60,10 +52,6 @@ export const useCreateUser = () => {
 
 export const useLogin = () => {
   const navigate = useNavigate()
-  const [, setToken] = useLocalStorage<string | null>(
-    LANGIFY_LOCAL_STORAGE_KEY,
-    null
-  )
 
   const mutation = useMutation({
     mutationKey: ['authUser'],
@@ -82,7 +70,6 @@ export const useLogin = () => {
     },
     onSuccess: (data) => {
       queryClient.setQueryData(['authUser'], data)
-      setToken(data.token)
     },
   })
 
@@ -122,7 +109,6 @@ export const useLogout = () => {
       return response
     },
     onSuccess: () => {
-      removeLocalStorageValue(LANGIFY_LOCAL_STORAGE_KEY)
       queryClient.setQueryData(['authUser'], undefined)
     },
   })
@@ -153,4 +139,9 @@ export const useUser = () => {
   })
 
   return query
+}
+
+export const fetchUser = async () => {
+  const response = await customFetch('/user/me', UserSchema)
+  return response
 }

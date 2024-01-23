@@ -19,10 +19,11 @@ async function createUser(req: Request, res: Response, next: NextFunction) {
       }),
     })
 
-    return res.status(201).json(newUser)
+    res.cookie('langify_token', newUser.token)
+    return res.status(201).send(newUser)
   } catch (error) {
     console.error(error)
-    return res.status(500).json({ message: `Something went wrong ${error}` })
+    return res.status(500).send({ message: `Something went wrong ${error}` })
   }
 }
 
@@ -37,13 +38,13 @@ async function login(req: Request, res: Response, next: NextFunction) {
   })
 
   if (!user) {
-    return res.status(404).json({ message: 'User not found' })
+    return res.status(404).send({ message: 'User not found' })
   }
 
   const isPasswordValid = PasswordUtil.compare(password, user.password)
 
   if (!isPasswordValid) {
-    return res.status(401).json({ message: 'Password is incorrect' })
+    return res.status(401).send({ message: 'Password is incorrect' })
   }
 
   user.token = TokenUtil.create({
@@ -54,6 +55,7 @@ async function login(req: Request, res: Response, next: NextFunction) {
 
   await user.save()
 
+  res.cookie('langify_token', user.token)
   res.send(user)
 }
 
@@ -63,7 +65,7 @@ async function me(req: Request, res: Response, next: NextFunction) {
 
 async function logout(req: Request, res: Response, next: NextFunction) {
   if (!req.user) {
-    return res.status(401).json({ message: 'Unauthorized' })
+    return res.status(401).send({ message: 'Unauthorized' })
   }
   req.user.token = null
   await req.user.save()

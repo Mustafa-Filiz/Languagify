@@ -1,5 +1,4 @@
 import { ZodError, z } from 'zod'
-import router from '../routes'
 
 type RequestOptions = {
   params?: Record<string, string>
@@ -18,23 +17,30 @@ async function customFetch<T>(
   options?: RequestOptions
 ): Promise<z.infer<typeof responseSchema>> {
   try {
-    let finalUrl = `${import.meta.env.VITE_BASE_API_URL}${url}`
-
     if (options?.params) {
       const params = new URLSearchParams(options.params).toString()
-      finalUrl += `?${params}`
+      url += `?${params}`
     }
 
-    const response = await fetch(finalUrl, {
+    // const token = getLocalStorageValue<string | null>(
+    //   LANGIFY_LOCAL_STORAGE_KEY,
+    //   null
+    // )
+
+    const response = await fetch(url, {
       ...options?.init,
-      credentials: 'include',
+      headers: {
+        ...options?.init?.headers,
+        // ...(token && { Authorization: `Bearer ${token}` }),
+      },
     })
 
-    if (response.status === 401) {
-      throw router.navigate({
-        to: '/login',
-      })
-    }
+    // if (response.status === 401) {
+    //   removeLocalStorageValue(LANGIFY_LOCAL_STORAGE_KEY)
+    //   throw router.navigate({
+    //     to: '/login',
+    //   })
+    // }
 
     if (!response.ok) {
       throw new Error(response.statusText)

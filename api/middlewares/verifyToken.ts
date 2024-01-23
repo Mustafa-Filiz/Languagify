@@ -11,11 +11,11 @@ declare global {
 }
 
 const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
-  if (!req.headers.authorization) {
+  const token = req.cookies.langify_token
+
+  if (!token) {
     return res.status(401).json({ message: 'No token provided' })
   }
-
-  const token = req.headers.authorization.split(' ')[1]
 
   try {
     const varifiedToken = TokenUtil.verify(token)
