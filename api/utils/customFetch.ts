@@ -32,7 +32,6 @@ async function customFetch<T>(
     }
 
     const data = await response.json()
-    console.log('🤖 ~ data:', data)
 
     const validatedData = responseSchema.parse(data)
 

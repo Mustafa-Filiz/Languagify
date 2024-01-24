@@ -2,11 +2,12 @@ import { Request, Response, NextFunction } from 'express'
 import { User } from '../models'
 import PasswordUtil from '../utils/PasswordUtil'
 import TokenUtil from '../utils/TokenUtil'
+import { catchError } from '../utils/catchError'
 
-async function createUser(req: Request, res: Response, next: NextFunction) {
-  const { firstName, lastName, email, password } = req.body
+const createUser = catchError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { firstName, lastName, email, password } = req.body
 
-  try {
     const newUser = await User.create({
       firstName,
       lastName,
@@ -21,55 +22,58 @@ async function createUser(req: Request, res: Response, next: NextFunction) {
 
     res.cookie('langify_token', newUser.token)
     return res.status(201).send(newUser)
-  } catch (error) {
-    console.error(error)
-    return res.status(500).send({ message: `Something went wrong ${error}` })
   }
-}
+)
 
-async function login(req: Request, res: Response, next: NextFunction) {
-  const { email, password } = req.body
+const login = catchError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email, password } = req.body
 
-  const user = await User.findOne({
-    where: {
-      email,
-    },
-    attributes: { include: ['password'] },
-  })
+    const user = await User.findOne({
+      where: {
+        email,
+      },
+      attributes: { include: ['password'] },
+    })
 
-  if (!user) {
-    return res.status(404).send({ message: 'User not found' })
+    if (!user) {
+      return res.status(404).send({ message: 'User not found' })
+    }
+
+    const isPasswordValid = PasswordUtil.compare(password, user.password)
+
+    if (!isPasswordValid) {
+      return res.status(401).send({ message: 'Password is incorrect' })
+    }
+
+    user.token = TokenUtil.create({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+    })
+
+    await user.save()
+
+    res.cookie('langify_token', user.token)
+    res.send(user)
   }
+)
 
-  const isPasswordValid = PasswordUtil.compare(password, user.password)
-
-  if (!isPasswordValid) {
-    return res.status(401).send({ message: 'Password is incorrect' })
+const me = catchError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    return res.send(req.user)
   }
+)
 
-  user.token = TokenUtil.create({
-    firstName: user.firstName,
-    lastName: user.lastName,
-    email: user.email,
-  })
-
-  await user.save()
-
-  res.cookie('langify_token', user.token)
-  res.send(user)
-}
-
-async function me(req: Request, res: Response, next: NextFunction) {
-  return res.send(req.user)
-}
-
-async function logout(req: Request, res: Response, next: NextFunction) {
-  if (!req.user) {
-    return res.status(401).send({ message: 'Unauthorized' })
+const logout = catchError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return res.status(401).send({ message: 'Unauthorized' })
+    }
+    req.user.token = null
+    await req.user.save()
+    return res.send({ message: 'Logout successfully' })
   }
-  req.user.token = null
-  await req.user.save()
-  return res.send({ message: 'Logout successfully' })
-}
+)
 
 export { createUser, login, me, logout }
